@@ -1,0 +1,8 @@
+{
+  "name": "MoySklad API doc (Middleman)",
+  "install": "bash .cursor/dev.sh install",
+  "start": "bash .cursor/dev.sh start",
+  "ports": [
+    { "name": "middleman", "port": 4567 }
+  ]
+}
