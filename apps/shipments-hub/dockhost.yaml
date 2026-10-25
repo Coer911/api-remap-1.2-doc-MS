@@ -1,0 +1,12 @@
+version: "1"
+project: shipments-hub
+
+containers:
+  - name: shipments-hub
+    image: .
+    # строго одна реплика: очередь, опрос и журнал живут в одном процессе
+    replicas: 1
+    resources:
+      cpu: 1
+      cpu_fraction: 20
+      memory: 256MiB

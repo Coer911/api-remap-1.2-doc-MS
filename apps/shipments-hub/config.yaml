@@ -1,0 +1,31 @@
+# Правила автоматизаций хаба отгрузок. Секретов здесь нет: токены и пароли —
+# в переменных окружения (.env.example). Все параметры автоматизации и их
+# значения по умолчанию — словарь defaults в hub/automations/<имя>.py.
+#
+# После правки: python -m hub check — сверит статусы, шаблоны и доп. поля
+# с вашим МойСклад и подскажет, что не так.
+
+automations:
+
+  # УПД покупателю, как только отгрузка перешла в статус state
+  send_upd:
+    enabled: true
+    state: "Отгружен"                 # точное имя статуса отгрузки (python -m hub states)
+    template: "Универсальный передаточный документ"   # python -m hub templates
+    format: pdf
+    channels: [email]                 # email | telegram | webhook
+    email_to: [agent]                 # agent — e-mail из карточки контрагента
+    email_cc: []                      # копия себе/бухгалтерии
+    subject: "УПД № {number} от {date} — {organization}"
+    body: |
+      Здравствуйте!
+
+      Направляем УПД № {number} от {date} на сумму {sum} ₽.
+
+      С уважением,
+      {organization}
+    with_link: false                  # добавить публичную ссылку МойСклад на документ
+    mark_attribute: "УПД отправлен"   # доп. поле отгрузки для отметки (python -m hub setup)
+    not_before: ""                    # ГГГГ-ММ-ДД — не трогать отгрузки раньше этой даты
+    # telegram_chats: ["-1001234567890"]
+    # webhook_url: "https://n8n.example.ru/webhook/upd"
