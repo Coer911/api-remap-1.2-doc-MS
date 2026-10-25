@@ -1,0 +1,14 @@
+version: "1"
+project: moysklad-hub
+
+containers:
+  - name: moysklad-hub
+    image: .
+    # на SQLite — строго одна реплика с HUB_ROLE=all.
+    # Масштабирование: PostgreSQL + отдельные контейнеры из этого же образа
+    # с HUB_ROLE=api / worker / scheduler (см. docs/ARCHITECTURE.md)
+    replicas: 1
+    resources:
+      cpu: 1
+      cpu_fraction: 20
+      memory: 256MiB

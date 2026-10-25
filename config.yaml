@@ -1,0 +1,72 @@
+# Правила автоматизаций. Секретов здесь нет: токены и пароли — в переменных
+# окружения (.env.example). Все параметры и значения по умолчанию — словарь
+# defaults в hub/automations/<файл>.py. Имя записи — как автоматизация видна
+# в журнале и API; uses — какой класс взять (по умолчанию = имени).
+#
+# После правки: python -m hub check — сверит статусы, шаблоны и доп. поля
+# с вашим МойСклад и подскажет, что не так.
+
+automations:
+
+  # ── отгрузки ──────────────────────────────────────────────────────────────
+
+  # УПД покупателю, как только отгрузка в статусе «Отгружен»
+  send_upd:
+    enabled: true
+    state: "Отгружен"                 # python -m hub states shipments
+    template: "Универсальный передаточный документ"   # python -m hub templates shipments
+    channels: [email]                 # email | telegram | webhook
+    email_cc: []
+    mark_field: "УПД отправлен"       # доп. поле отгрузки (python -m hub setup)
+    with_link: false
+    # state_after: "УПД отправлен"    # сменить статус отгрузки после отправки
+
+  # заказ идёт следом за отгрузкой: отгрузили — заказ «Отгружен»
+  sync_order_state:
+    enabled: false
+    state: "Отгружен"
+    order_state: "Отгружен"
+    only_from: ["Подтверждён", "Собран"]   # не трогать «Отменён» и прочее ручное
+
+  # ── заказы ────────────────────────────────────────────────────────────────
+
+  # счёт покупателю, когда заказ подтверждён
+  order_invoice:
+    enabled: false
+    uses: send_document
+    entity: customerorder
+    state: "Подтверждён"
+    template: "Счет покупателю"       # python -m hub templates orders
+    file_title: "Счёт"
+    channels: [email]
+
+  # складу в Telegram: заказ собран
+  order_assembled:
+    enabled: false
+    uses: notify
+    entity: customerorder
+    when: state_changed               # state | created | state_changed
+    state: "Собран"
+    telegram_chats: ["-1001234567890"]
+    text: "📦 Заказ {number} собран · {agent} · {sum} ₽ · {address}"
+
+  # ── контрагенты ───────────────────────────────────────────────────────────
+
+  # новому контрагенту — значения доп. полей и статус
+  new_counterparty:
+    enabled: false
+    uses: counterparty_fields
+    when: created                     # created | any
+    fields:                           # python -m hub fields counterparties
+      "Канал продаж": "HoReCa"
+      "Источник": "МойСклад"
+    set_state: "Новый"
+    only_empty: true                  # не перетирать то, что ввели руками
+
+  # ── по расписанию ─────────────────────────────────────────────────────────
+
+  daily_digest:
+    enabled: false
+    at: "18:00"                       # по Москве
+    types: [customerorder, demand]
+    telegram_chats: ["-1001234567890"]

@@ -1,0 +1,19 @@
+[project]
+name = "moysklad-hub"
+version = "1.0.0"
+description = "Хаб автоматизаций МойСклад: заказы, отгрузки, статусы, доп. поля контрагентов"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+extend-exclude = ["docs"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "UP", "I"]
+ignore = ["E501", "B008"]  # B008: Depends()/Body() в аргументах — идиома FastAPI

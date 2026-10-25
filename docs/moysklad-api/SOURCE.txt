@@ -1,0 +1,4 @@
+Документация МойСклад JSON API 1.2 — копия md/ из
+https://github.com/moysklad/api-remap-1.2-doc.
+Коммит: 3bf292f64c4ab12f7125742956fb9badd9875375
+Обновить: python3 .claude/skills/moysklad-api/scripts/update_docs.py
