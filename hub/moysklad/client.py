@@ -276,7 +276,8 @@ class MoySklad:
             if r.status_code in (301, 302, 303, 307) and r.headers.get("Location"):
                 return await self._download(r.headers["Location"])
             return r.content
-        # временное хранилище на другом хосте — токен туда не отдаём
+        # временное хранилище на другом хосте (на живом API — print-prod.moysklad.ru):
+        # токен туда не отдаём, а в сетевых правилах хостинга этот хост должен быть открыт
         async with httpx.AsyncClient(timeout=60.0, follow_redirects=True,
                                      transport=self._transport) as plain:
             r = await plain.get(url)

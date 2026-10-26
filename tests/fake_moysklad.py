@@ -168,8 +168,10 @@ class FakeMoySklad:
             return httpx.Response(200, json={"name": "Робот хаба", "uid": "robot@cultura"})
         if m := re.fullmatch(r"entity/(\w+)/metadata", path):
             t = m.group(1)
-            return httpx.Response(200, json={"states": self.states.get(t, []),
-                                             "attributes": self.attributes.get(t, [])})
+            # как настоящий API: доп. поля — ссылкой, сами они по /metadata/attributes
+            return httpx.Response(200, json={"states": self.states.get(t, []), "attributes": {
+                "meta": {"href": f"{BASE}/entity/{t}/metadata/attributes", "type": "attributemetadata",
+                         "size": len(self.attributes.get(t, [])), "limit": 1000, "offset": 0}}})
         if m := re.fullmatch(r"entity/(\w+)/metadata/(embeddedtemplate|customtemplate)", path):
             t, kind = m.groups()
             names = TEMPLATES.get(t, []) if kind == "embeddedtemplate" else []
@@ -179,7 +181,8 @@ class FakeMoySklad:
         if m := re.fullmatch(r"entity/(\w+)/metadata/attributes", path):
             if method == "POST":
                 return httpx.Response(200, json=self.add_field(m.group(1), body["name"], body["type"]))
-            return httpx.Response(200, json={"rows": self.attributes[m.group(1)]})
+            rows = self.attributes[m.group(1)]
+            return httpx.Response(200, json={"meta": {"size": len(rows)}, "rows": rows})
         if m := re.fullmatch(r"entity/customentity/([\w-]+)", path):
             rows = self.customentities.get(m.group(1), [])
             return httpx.Response(200, json={"meta": {"size": len(rows)}, "rows": rows})

@@ -14,7 +14,7 @@ automations:
   send_upd:
     enabled: true
     state: "Отгружен"                 # python -m hub states shipments
-    template: "Универсальный передаточный документ"   # python -m hub templates shipments
+    template: "УПД"                   # python -m hub templates shipments
     channels: [email]                 # email | telegram | webhook
     email_cc: []
     mark_field: "УПД отправлен"       # доп. поле отгрузки (python -m hub setup)

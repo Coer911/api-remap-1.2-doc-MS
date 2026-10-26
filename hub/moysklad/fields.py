@@ -55,7 +55,13 @@ async def set_state(ms: MoySklad, type_: str, id_: str, name: str) -> dict:
 # ── доп. поля ────────────────────────────────────────────────────────────────
 
 async def definitions(ms: MoySklad, type_: str) -> list[dict]:
-    return (await ms.metadata(type_)).get("attributes", [])
+    """Доп. поля типа. В метаданных они приходят ссылкой {"meta": …, size} — сами поля
+    лежат по /entity/<тип>/metadata/attributes (проверено на живом API)."""
+    attrs = (await ms.metadata(type_)).get("attributes", [])
+    if isinstance(attrs, list):
+        return attrs
+    return await ms.cached(f"meta:{type_}:attributes",
+                           lambda: ms._all(f"entity/{type_}/metadata/attributes"))
 
 
 async def find_definition(ms: MoySklad, type_: str, name: str) -> dict:
