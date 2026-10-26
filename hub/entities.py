@@ -36,13 +36,14 @@ class Party:
     email: str = ""
     phone: str = ""
     inn: str = ""
+    company_type: str = ""        # legal — юрлицо, entrepreneur — ИП, individual — физлицо
 
     @classmethod
     def from_api(cls, d: dict | None) -> Party:
         d = d or {}
         return cls(id=d.get("id") or _ref_id(d), name=d.get("name", ""),
                    email=(d.get("email") or "").strip(), phone=d.get("phone", ""),
-                   inn=d.get("inn", ""))
+                   inn=d.get("inn", ""), company_type=d.get("companyType", ""))
 
 
 @dataclass(kw_only=True)

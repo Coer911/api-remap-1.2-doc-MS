@@ -10,11 +10,25 @@ automations:
 
   # ── отгрузки ──────────────────────────────────────────────────────────────
 
-  # УПД покупателю, как только отгрузка в статусе «Отгружен»
-  send_upd:
+  # каждый день в 17:00 — УПД за сегодня покупателям на почту, одно письмо на контрагента
+  daily_upd:
     enabled: true
-    state: "Отгружен"                 # python -m hub states shipments
+    at: "17:00"                       # по Москве
     template: "УПД"                   # python -m hub templates shipments
+    only_applicable: true             # только проведённые (отгруженные)
+    only_with_order: true             # только созданные по заказу покупателя
+    company_types: [legal, entrepreneur]   # юрлица и ИП (физлица — нет)
+    name_prefixes: ["ООО", "ИП"]      # и по названию: «ООО …», «ИП …» (АО, ПАО — не берём)
+    states: []                        # только эти статусы отгрузки; пусто — любые
+    exclude_states: []                # например ["ОТПРАВЛЕН В ЭДО"], если по ЭДО уже ушло
+    email_cc: []                      # копия себе/бухгалтерии
+    report_chats: []                  # Telegram-чаты для отчёта: сколько ушло, у кого нет e-mail
+
+  # УПД сразу по статусу отгрузки (по событию, а не по расписанию)
+  send_upd:
+    enabled: false
+    state: "ОТПРАВЛЕН"                # python -m hub states shipments
+    template: "УПД"
     channels: [email]                 # email | telegram | webhook
     email_cc: []
     mark_field: "УПД отправлен"       # доп. поле отгрузки (python -m hub setup)

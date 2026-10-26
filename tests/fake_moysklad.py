@@ -16,11 +16,11 @@ BASE = "https://api.moysklad.ru/api/remap/1.2"
 TYPES = ("customerorder", "demand", "counterparty")
 STATES = {
     "customerorder": ["Новый", "Подтверждён", "Собран", "Отгружен", "Отменён"],
-    "demand": ["Новый", "Отгружен", "Доставлен"],
+    "demand": ["Новый", "Отгружен", "Доставлен", "ОТПРАВЛЕН", "ОТПРАВЛЕН В ЭДО"],
     "counterparty": ["Новый", "Постоянный", "Спящий"],
 }
 TEMPLATES = {
-    "demand": ["ТОРГ-12", "Универсальный передаточный документ"],
+    "demand": ["ТОРГ-12", "Универсальный передаточный документ", "УПД"],
     "customerorder": ["Заказ покупателя", "Счет покупателю"],
 }
 
@@ -78,10 +78,11 @@ class FakeMoySklad:
         return f"2026-10-25 12:{self._clock // 60:02d}:{self._clock % 60:02d}.000"
 
     def add_counterparty(self, name: str = "ООО «Кофейня»", email: str = "buyer@example.ru",
-                         inn: str = "7800000000", state: str | None = None) -> dict:
+                         inn: str = "7800000000", state: str | None = None,
+                         company_type: str = "legal") -> dict:
         id_ = str(uuid.uuid4())
         c = {**meta("counterparty", id_), "id": id_, "name": name, "email": email, "inn": inn,
-             "phone": "+7 900 000-00-00", "companyType": "legal", "updated": self.tick(),
+             "phone": "+7 900 000-00-00", "companyType": company_type, "updated": self.tick(),
              "attributes": [], "tags": []}
         if state:
             c["state"] = self.state("counterparty", state)
