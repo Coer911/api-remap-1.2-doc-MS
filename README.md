@@ -52,7 +52,7 @@ curl localhost:8080/healthz
 4. Опрос раз в 5 минут подхватывает всё, что вебхук потерял, пока хаб лежал, или на
    бесплатном тарифе, где вебхуков нет.
 
-Подробно, с масштабированием — [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+Подробно, с масштабированием — [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Что дальше — [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Настройка
 
